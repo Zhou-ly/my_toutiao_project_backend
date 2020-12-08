@@ -8,14 +8,15 @@ from models import User
 
 @app.route("/mp/v1_0/authorizations", methods=["POST"])
 def login():
-    # hashed_password = generate_password_hash('246810')
+    hashed_password = generate_password_hash('246810')
     # User(
     #     mobile='13911111111',
     #     code=hashed_password,
     #     photo='http://toutiao-img.itheima.net/FuyELvGh8jbise6dfoEr0W7luPLq',
     #     gender=1,
     #     name='zhangsan',
-    #     intro='zhangsanfeng'
+    #     intro='zhangsanfeng',
+    #     email='zhangsan@qq.com'
     # ).save()
     if not request.json.get("mobile"):
         return jsonify({"error": "Mobile not specified"}), 409
@@ -38,21 +39,20 @@ def login():
 
     if not check_password_hash(user.code, request.json.get("code")):
         return jsonify({"error": "Invalid code"}), 401
-    #
-    # token = jwt.encode({
-    #     "userid": str(user.id),
-    #     "username": user.username,
-    #     "email": user.email,
-    #     "password": user.password,
-    #     "created": str(user.created)
-    # }, app.config["SECRET_KEY"])
+
+    token = jwt.encode({
+        "userid": str(user.id),
+        "name": user.name,
+        "email": user.email,
+        "created": str(user.created)
+    }, app.config["SECRET_KEY"]).decode('utf-8')
 
     return jsonify({
         # "success": True,
         "message": 'OK',
         "data": {
             "user": user.name,
-            "token": 'XXXXXXXXXXXXXXXXX',
+            "token": token,
         },
 
     })
